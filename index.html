@@ -1,28 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Tetris</title>
-  <style>
-    /* Styling the Tetris game area */
-    #game-board {
-      border: 1px solid #000;
-      width: 300px;
-      height: 600px;
-      margin: 0 auto;
-      position: relative;
-    }
-  
-    /* Styling the Tetris blocks */
-    .block {
-      position: absolute;
-      width: 30px;
-      height: 30px;
-    }
-  </style>
+  <title>Tetris Game</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
+  <!-- Game board -->
   <div id="game-board"></div>
+
+  <!-- Buttons -->
+  <div id="buttons">
+    <button id="start-btn">Start</button>
+    <button id="pause-btn">Pause</button>
+    <button id="resume-btn">Resume</button>
+    <button id="left-btn">Left</button>
+    <button id="right-btn">Right</button>
+    <button id="rotate-btn">Rotate</button>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
-
