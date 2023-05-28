@@ -26,13 +26,14 @@ for (let row = 0; row < rows; row++) {
 
 let currentTetromino; // Current falling tetromino
 let currentPosition; // Current position of the tetromino
+let gameInterval; // Interval ID for the game loop
 
 // Initialize the game
 function initGame() {
   currentTetromino = getRandomTetromino();
   currentPosition = { row: 0, col: Math.floor(columns / 2) - 1 };
   drawTetromino();
-  setInterval(moveDown, speed);
+  gameInterval = setInterval(moveDown, speed);
 }
 
 // Generate a random tetromino shape
@@ -44,11 +45,11 @@ function getRandomTetromino() {
 // Draw the current tetromino on the game board
 function drawTetromino() {
   const board = document.getElementById('game-board');
-  
+
   // Remove previous tetromino from the board
   const previousTetromino = document.querySelectorAll('.block');
   previousTetromino.forEach(block => block.remove());
-  
+
   // Draw the current tetromino
   for (let row = 0; row < currentTetromino.length; row++) {
     for (let col = 0; col < currentTetromino[row].length; col++) {
@@ -170,24 +171,35 @@ function rotateMatrix(matrix) {
   return rotatedMatrix;
 }
 
-// Handle keyboard events
-document.addEventListener('keydown', event => {
-  switch (event.key) {
-    case 'ArrowUp':
-      rotate();
-      break;
-    case 'ArrowLeft':
-      moveLeft();
-      break;
-    case 'ArrowRight':
-      moveRight();
-      break;
-    case 'ArrowDown':
-      moveDown();
-      break;
+// Button event handlers
+document.getElementById('start-btn').addEventListener('click', () => {
+  if (!gameInterval) {
+    initGame();
   }
+});
+
+document.getElementById('pause-btn').addEventListener('click', () => {
+  clearInterval(gameInterval);
+  gameInterval = null;
+});
+
+document.getElementById('resume-btn').addEventListener('click', () => {
+  if (!gameInterval) {
+    gameInterval = setInterval(moveDown, speed);
+  }
+});
+
+document.getElementById('left-btn').addEventListener('click', () => {
+  moveLeft();
+});
+
+document.getElementById('right-btn').addEventListener('click', () => {
+  moveRight();
+});
+
+document.getElementById('rotate-btn').addEventListener('click', () => {
+  rotate();
 });
 
 // Start the game
 initGame();
-
