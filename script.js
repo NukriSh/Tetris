@@ -46,10 +46,6 @@ function getRandomTetromino() {
 function drawTetromino() {
   const board = document.getElementById('game-board');
 
-  // Remove previous tetromino from the board
-  const previousTetromino = document.querySelectorAll('.block');
-  previousTetromino.forEach(block => block.remove());
-
   // Draw the current tetromino
   for (let row = 0; row < currentTetromino.length; row++) {
     for (let col = 0; col < currentTetromino[row].length; col++) {
@@ -65,141 +61,46 @@ function drawTetromino() {
   }
 }
 
-// Move the tetromino down
-function moveDown() {
-  if (isValidMove(1, 0)) {
-    clearTetromino();
-    currentPosition.row++;
-    drawTetromino();
-  } else {
-    lockTetromino();
-    clearLines();
-    currentTetromino = getRandomTetromino();
-    currentPosition = { row: 0, col: Math.floor(columns / 2) - 1 };
-    drawTetromino();
-  }
-}
 
-// Move the tetromino left
-function moveLeft() {
-  if (isValidMove(0, -1)) {
-    clearTetromino();
-    currentPosition.col--;
-    drawTetromino();
-  }
-}
 
-// Move the tetromino right
-function moveRight() {
-  if (isValidMove(0, 1)) {
-    clearTetromino();
-    currentPosition.col++;
-    drawTetromino();
-  }
-}
 
-// Rotate the tetromino
-function rotate() {
-  const rotatedTetromino = rotateMatrix(currentTetromino);
-  if (isValidMove(0, 0, rotatedTetromino)) {
-    clearTetromino();
-    currentTetromino = rotatedTetromino;
-    drawTetromino();
-  }
-}
 
-// Check if the current move is valid
-function isValidMove(rowOffset, colOffset, tetromino = currentTetromino) {
-  for (let row = 0; row < tetromino.length; row++) {
-    for (let col = 0; col < tetromino[row].length; col++) {
-      if (tetromino[row][col]) {
-        const newRow = currentPosition.row + row + rowOffset;
-        const newCol = currentPosition.col + col + colOffset;
-        if (
-          newRow >= rows ||
-          newCol < 0 ||
-          newCol >= columns ||
-          grid[newRow][newCol]
-        ) {
-          return false;
-        }
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  var startButton = document.getElementById('start-btn');
+  var gameBoard = document.getElementById('game-board');
+  var figure = document.createElement('div');
+
+  startButton.addEventListener('click', function() {
+    // Remove any existing figures from the game board
+    while (gameBoard.firstChild) {
+      gameBoard.removeChild(gameBoard.firstChild);
+    }
+
+    // Set initial position of the figure
+    var position = 0;
+    figure.style.position = 'absolute'; // Set the position to absolute
+
+    // Function to move the figure down
+    function moveDown() {
+      // Increment the position
+      position+=3;
+
+      // Update the figure position
+      figure.style.top = position + 'px';
+
+      // Check if the figure has reached the bottom
+      if (position < gameBoard.offsetHeight - figure.offsetHeight) {
+        requestAnimationFrame(moveDown); // Continue moving down
       }
     }
-  }
-  return true;
-}
 
-// Lock the tetromino in place
-function lockTetromino() {
-  for (let row = 0; row < currentTetromino.length; row++) {
-    for (let col = 0; col < currentTetromino[row].length; col++) {
-      if (currentTetromino[row][col]) {
-        grid[currentPosition.row + row][currentPosition.col + col] = 1;
-      }
-    }
-  }
-}
+    // Start moving the figure down
+    requestAnimationFrame(moveDown);
 
-// Clear the tetromino from the game board
-function clearTetromino() {
-  const blocks = document.querySelectorAll('.block');
-  blocks.forEach(block => block.remove());
-}
-
-// Clear filled lines
-function clearLines() {
-  for (let row = rows - 1; row >= 0; row--) {
-    if (grid[row].every(cell => cell)) {
-      grid.splice(row, 1);
-      grid.unshift(Array(columns).fill(0));
-    }
-  }
-}
-
-// Rotate a matrix (90 degrees clockwise)
-function rotateMatrix(matrix) {
-  const numRows = matrix.length;
-  const numCols = matrix[0].length;
-  const rotatedMatrix = [];
-  for (let col = 0; col < numCols; col++) {
-    const newRow = [];
-    for (let row = numRows - 1; row >= 0; row--) {
-      newRow.push(matrix[row][col]);
-    }
-    rotatedMatrix.push(newRow);
-  }
-  return rotatedMatrix;
-}
-
-// Button event handlers
-document.getElementById('start-btn').addEventListener('click', () => {
-  if (!gameInterval) {
-    initGame();
-  }
+    // Add the figure to the game board
+    figure.classList.add('block');
+    gameBoard.appendChild(figure);
+  });
 });
-
-document.getElementById('pause-btn').addEventListener('click', () => {
-  clearInterval(gameInterval);
-  gameInterval = null;
-});
-
-document.getElementById('resume-btn').addEventListener('click', () => {
-  if (!gameInterval) {
-    gameInterval = setInterval(moveDown, speed);
-  }
-});
-
-document.getElementById('left-btn').addEventListener('click', () => {
-  moveLeft();
-});
-
-document.getElementById('right-btn').addEventListener('click', () => {
-  moveRight();
-});
-
-document.getElementById('rotate-btn').addEventListener('click', () => {
-  rotate();
-});
-
-// Start the game
-initGame();
